@@ -29,7 +29,7 @@ class UserTestCase(unittest.TestCase):
 
     def test_new_user(self):
         """
-        Test user creation
+        Test user creation via REST API
         """
         resp = self.client.post('/user/users',
                                 headers=self._api_headers(),
@@ -54,6 +54,9 @@ class UserTestCase(unittest.TestCase):
         self.assertEqual(json_resp['missing'], ['email', 'password'])
 
     def test_jwt(self):
+        """
+        Test generation of JWT token
+        """
         resp = self.client.get('/auth/status',
                                headers=self._api_headers())
         json_resp = json.loads(resp.data.decode('utf-8'))
