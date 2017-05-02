@@ -1,0 +1,6 @@
+Flask-JWT==0.3.2
+flask-restplus==0.10.1
+Flask-Script==2.0.5
+Flask-Security==1.7.5
+Flask-SQLAlchemy==2.2
+itsdangerous==0.24
