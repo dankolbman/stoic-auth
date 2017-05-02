@@ -43,3 +43,14 @@ class UserTestCase(unittest.TestCase):
         self.assertEqual(resp.status, '400 BAD REQUEST')
         self.assertEqual(json_resp['status'], 'missing fields')
         self.assertEqual(json_resp['missing'], ['email', 'password'])
+
+    def test_user_by_username(self):
+        """
+        Test retrieving user by username
+        """
+        username = make_user(self.client)['username']
+        resp = self.client.get('/user/'+username,
+                               headers=api_headers())
+        json_resp = json.loads(resp.data.decode('utf-8'))
+        self.assertEqual(json_resp['status'], 'user found')
+        self.assertEqual(json_resp['user']['username'], username)

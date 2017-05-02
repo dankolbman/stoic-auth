@@ -1,5 +1,6 @@
 import json
 
+
 def api_headers():
     """
     Headers for json request

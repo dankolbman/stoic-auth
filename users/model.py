@@ -1,5 +1,4 @@
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask.ext.security import UserMixin, RoleMixin
 
 from . import db
 
@@ -11,7 +10,7 @@ roles_users = db.Table('roles_users',
                                  db.ForeignKey('roles.id')))
 
 
-class User(db.Model, UserMixin):
+class User(db.Model):
     """
     The user model
     """
@@ -36,8 +35,11 @@ class User(db.Model, UserMixin):
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+    def to_json(self):
+        return {"username": self.username}
 
-class Role(db.Model, RoleMixin):
+
+class Role(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(80), unique=True)

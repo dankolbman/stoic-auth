@@ -16,9 +16,21 @@ class Status(Resource):
 
 @api.route('/')
 class NewUser(Resource):
+    @api.doc(responses={400: 'missing fields', 201: 'user registered'})
     def post(self, **kwargs):
         """
         Register a new user
+
+        Create a new user:
+
+        ```
+        POST /user -d '
+        {
+            "username": "Jim",
+            "password": "123",
+            "email": "jim@example.com"
+        }'
+        ```
         """
         missing = []
         fields = {}
@@ -42,30 +54,18 @@ class NewUser(Resource):
                 'email': fields['email'],
                 'status': 'user registered'}, 201
 
+
 @api.route('/<string:username>')
 class UserResource(Resource):
-    def get(self, **kwargs):
+    @api.doc(responses={
+                200: 'user found',
+                404: 'user not found'})
+    def get(self, username):
         """
-        Get a user by id
+        Get a user by username
         """
-        missing = []
-        fields = {}
-        # Retrieve user properties from json
-        for v in ['username', 'email', 'password']:
-            fields[v] = request.json.get(v)
-            if fields[v] is None:
-                missing.append(v)
+        user = User.query.filter_by(username=username).first()
+        if user is not None:
+            return {'status': 'user found', 'user': user.to_json()}, 200
 
-        if len(missing) > 0:
-            return {'missing': missing, 'status': 'missing fields'}, 400
-        if User.query.filter_by(email=fields['email']).first() is not None:
-            return {'missing': missing, 'status': 'user exists'}, 400
-        user = User(username=fields['username'],
-                    password=fields['password'],
-                    email=fields['password'],
-                    active=True)
-        db.session.add(user)
-        db.session.commit()
-        return jsonify({'username': user.username,
-                'email': fields['email'],
-                'status': 'user registered'}), 201
+        return {'status': 'user not found'}, 404
