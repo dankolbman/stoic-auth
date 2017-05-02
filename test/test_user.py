@@ -6,6 +6,8 @@ from flask import current_app, url_for
 from users import create_app, db
 from users.model import User
 
+from test.utils import make_user, api_headers
+
 
 class UserTestCase(unittest.TestCase):
 
@@ -21,26 +23,11 @@ class UserTestCase(unittest.TestCase):
         db.drop_all()
         self.app_context.pop()
 
-    def _api_headers(self):
-        return {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
-
-    def _make_user(self):
-        resp = self.client.post('/user/',
-                                headers=self._api_headers(),
-                                data=json.dumps({'username': 'Dan',
-                                                 'email': 'dan@localhost.com',
-                                                 'password': '123'}))
-        json_resp = json.loads(resp.data.decode('utf-8'))
-        return json_resp
-
     def test_new_user(self):
         """
         Test user creation via REST API
         """
-        json_resp = self._make_user()
+        json_resp = make_user(self.client)
         # check api response
         self.assertEqual(json_resp['status'], 'user registered')
         self.assertEqual(json_resp['username'], 'Dan')
@@ -49,32 +36,10 @@ class UserTestCase(unittest.TestCase):
 
         # check malformed query
         resp = self.client.post('/user/',
-                                headers=self._api_headers(),
+                                headers=api_headers(),
                                 data=json.dumps({'username': 'Dan'}))
         json_resp = json.loads(resp.data.decode('utf-8'))
         # check api response
         self.assertEqual(resp.status, '400 BAD REQUEST')
         self.assertEqual(json_resp['status'], 'missing fields')
         self.assertEqual(json_resp['missing'], ['email', 'password'])
-
-    def test_jwt(self):
-        """
-        Test generation of JWT token
-        """
-        resp = self.client.get('/auth/status',
-                               headers=self._api_headers())
-        json_resp = json.loads(resp.data.decode('utf-8'))
-        # create a user
-        json_resp = self._make_user()
-        # get a token
-        resp = self.client.post('/auth',
-                                headers=self._api_headers(),
-                                data=json.dumps({'username': 'Dan',
-                                                 'password': '123'}))
-        json_resp = json.loads(resp.data.decode('utf-8'))
-        # check status
-        headers = self._api_headers()
-        headers.update({'Authorization': "JWT " + json_resp['access_token']})
-        resp = self.client.get('/auth/status',
-                               headers=headers)
-        json_resp = json.loads(resp.data.decode('utf-8'))
