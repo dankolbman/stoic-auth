@@ -27,24 +27,28 @@ class UserTestCase(unittest.TestCase):
             'Content-Type': 'application/json'
         }
 
-    def test_new_user(self):
-        """
-        Test user creation via REST API
-        """
-        resp = self.client.post('/user/users',
+    def _make_user(self):
+        resp = self.client.post('/user/',
                                 headers=self._api_headers(),
                                 data=json.dumps({'username': 'Dan',
                                                  'email': 'dan@localhost.com',
                                                  'password': '123'}))
         json_resp = json.loads(resp.data.decode('utf-8'))
+        return json_resp
+
+    def test_new_user(self):
+        """
+        Test user creation via REST API
+        """
+        json_resp = self._make_user()
         # check api response
-        self.assertEqual(resp.status, '201 CREATED')
+        self.assertEqual(json_resp['status'], 'user registered')
         self.assertEqual(json_resp['username'], 'Dan')
         # check that user is in database
         self.assertEqual(User.query.count(), 1)
 
         # check malformed query
-        resp = self.client.post('/user/users',
+        resp = self.client.post('/user/',
                                 headers=self._api_headers(),
                                 data=json.dumps({'username': 'Dan'}))
         json_resp = json.loads(resp.data.decode('utf-8'))
@@ -61,12 +65,7 @@ class UserTestCase(unittest.TestCase):
                                headers=self._api_headers())
         json_resp = json.loads(resp.data.decode('utf-8'))
         # create a user
-        resp = self.client.post('/user/users',
-                                headers=self._api_headers(),
-                                data=json.dumps({'username': 'Dan',
-                                                 'email': 'dan@localhost.com',
-                                                 'password': '123'}))
-        json_resp = json.loads(resp.data.decode('utf-8'))
+        json_resp = self._make_user()
         # get a token
         resp = self.client.post('/auth',
                                 headers=self._api_headers(),

@@ -15,7 +15,7 @@ class Status(Resource):
         return {'status': 200, 'version': '1.0'}
 
 
-@api.route('/users')
+@api.route('/')
 class UserResource(Resource):
     def post(self, **kwargs):
         """
