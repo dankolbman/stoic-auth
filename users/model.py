@@ -5,8 +5,10 @@ from . import db
 
 
 roles_users = db.Table('roles_users',
-        db.Column('user_id', db.Integer(), db.ForeignKey('users.id')),
-        db.Column('role_id', db.Integer(), db.ForeignKey('roles.id')))
+                       db.Column('user_id', db.Integer(),
+                                 db.ForeignKey('users.id')),
+                       db.Column('role_id', db.Integer(),
+                                 db.ForeignKey('roles.id')))
 
 
 class User(db.Model, UserMixin):
@@ -33,6 +35,7 @@ class User(db.Model, UserMixin):
 
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
+
 
 class Role(db.Model, RoleMixin):
     __tablename__ = 'roles'

@@ -13,6 +13,7 @@ class Status(Resource):
         return {'status': 200,
                 'version': '1.0'}
 
+
 def authenticate(username, password):
     """
     Authenticates a user and returns the model object
@@ -20,6 +21,7 @@ def authenticate(username, password):
     user = User.query.filter_by(username=username).first()
     if user and user.verify_password(password):
         return user
+
 
 def identity(payload):
     """
