@@ -27,7 +27,6 @@ class UserTestCase(unittest.TestCase):
             'Content-Type': 'application/json'
         }
 
-
     def test_new_user(self):
         """
         Test user creation

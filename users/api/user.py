@@ -15,7 +15,7 @@ class Status(Resource):
         return {'status': 200, 'version': '1.0'}
 
 
-@api.route('/users', methods = ['POST'])
+@api.route('/users')
 class UserResource(Resource):
     def post(self, **kwargs):
         """
@@ -36,6 +36,6 @@ class UserResource(Resource):
         user = user_db.create_user(username=fields['username'],
                                    password=fields['password'],
                                    email=fields['password'])
-        return { 'username': user.username,
-                 'email': fields['email'],
-                 'status': 'user registered' }, 201
+        return {'username': user.username,
+                'email': fields['email'],
+                'status': 'user registered'}, 201
