@@ -9,6 +9,8 @@ class Config:
     JWT_AUTH_USERNAME_KEY = 'username'
     JWT_AUTH_PASSWORD_KEY = 'password'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI',
+                                             'postgres://postgres:5432/stoic')
 
     @staticmethod
     def init_app(app):
