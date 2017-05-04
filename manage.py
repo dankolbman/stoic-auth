@@ -26,14 +26,15 @@ manager.add_command('db', MigrateCommand)
 
 @manager.command
 def test(coverage=False):
-    """Run the unit tests."""
-    import unittest
-    tests = unittest.TestLoader().discover('test')
-    unittest.TextTestRunner(verbosity=2).run(tests)
+    """ Run the unit tests and pep8 checks """
+    from subprocess import call
+    call(["python","-m","pytest","test"])
+    call(["python","-m","pytest","--pep8","test"])
+    call(["python","-m","pytest","--pep8","users"])
 
 @manager.command
 def deploy():
-    """Run deployment tasks."""
+    """ Run deployment tasks """
     from flask.ext.migrate import upgrade
 
     # migrate database to latest revision

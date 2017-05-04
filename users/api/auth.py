@@ -35,5 +35,5 @@ def identity(payload):
     """
     Resolves a user from the JWT payload
     """
-    user_id = payload['identity']
-    return User.query.get_or_404(user_id)
+    username = payload['identity']['username']
+    return User.query.filter_by(username=username).first()
