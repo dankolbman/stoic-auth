@@ -5,7 +5,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 class Config:
     HOST = '0.0.0.0'
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'hard to guess string'
-    SSL_DISABLE = os_environ.get('SSL_DISABLE', False)
+    SSL_DISABLE = os.environ.get('SSL_DISABLE', False)
     JWT_AUTH_USERNAME_KEY = 'username'
     JWT_AUTH_PASSWORD_KEY = 'password'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
