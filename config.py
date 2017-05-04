@@ -18,14 +18,14 @@ class Config:
 class DevelopmentConfig(Config):
     DEBUG = True
     SSL_DISABLE = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///dev.sql'
+    SQLALCHEMY_DATABASE_URI = 'postgres:///stoic_dev'
 
 
 class TestingConfig(Config):
     TESTING = True
     SECRET_KEY = 'secret'
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///test.sql'
+    SQLALCHEMY_DATABASE_URI = 'postgres:///stoic_test'
 
 
 class ProductionConfig(Config):
