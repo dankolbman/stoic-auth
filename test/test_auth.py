@@ -1,27 +1,14 @@
 import json
+import jwt
 import unittest
 from datetime import datetime
 
 from flask import current_app, url_for
-from users import create_app, db
-from users.model import User
 
-from test.utils import make_user, api_headers
+from test.utils import FlaskTestCase, make_user, api_headers
 
 
-class AuthTestCase(unittest.TestCase):
-
-    def setUp(self):
-        self.app = create_app('testing')
-        self.app_context = self.app.app_context()
-        self.app_context.push()
-        self.client = self.app.test_client()
-        db.create_all()
-
-    def tearDown(self):
-        db.session.remove()
-        db.drop_all()
-        self.app_context.pop()
+class AuthTestCase(FlaskTestCase):
 
     def _get_jwt(self):
         pass
@@ -49,3 +36,17 @@ class AuthTestCase(unittest.TestCase):
                                headers=headers)
         json_resp = json.loads(resp.data.decode('utf-8'))
         self.assertEqual(json_resp['username'], 'Dan')
+
+    def test_permissions(self):
+        """
+        Test the authorization permissions in the JWT
+        """
+        json_resp = make_user(self.client, 'test')
+        # get a token
+        resp = self.client.post('/auth',
+                                headers=api_headers(),
+                                data=json.dumps({'username': 'test',
+                                                 'password': '123'}))
+        json_resp = json.loads(resp.data.decode('utf-8'))['access_token']
+        token = jwt.decode(json_resp, 'secret', algorithms=['HS256'])
+        self.assertIn('permissions', token['identity'])
