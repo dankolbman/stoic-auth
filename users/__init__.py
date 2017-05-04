@@ -1,6 +1,7 @@
+from datetime import datetime
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flask_jwt import JWT
+from flask_jwt import JWT, _default_jwt_payload_handler
 from config import config
 
 db = SQLAlchemy()
@@ -16,6 +17,14 @@ def create_app(config_name):
     api.init_app(app)
     from .api.auth import authenticate, identity
     jwt = JWT(app, authenticate, identity)
+
+    @jwt.jwt_payload_handler
+    def make_payload(identity):
+        iat = datetime.utcnow()
+        exp = iat + app.config.get('JWT_EXPIRATION_DELTA')
+        nbf = iat + app.config.get('JWT_NOT_BEFORE_DELTA')
+        return {'exp': exp, 'iat': iat, 'nbf': nbf,
+                'identity': {'username': identity.username}}
 
     if not app.debug and not app.testing and not app.config['SSL_DISABLE']:
         from flask_sslify import SSLify
