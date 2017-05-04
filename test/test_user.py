@@ -4,24 +4,12 @@ from datetime import datetime
 
 from flask import current_app, url_for
 from users import create_app, db
-from users.model import User
+from users.model import User, Permission
 
-from test.utils import make_user, api_headers
+from test.utils import FlaskTestCase, make_user, api_headers
 
 
-class UserTestCase(unittest.TestCase):
-
-    def setUp(self):
-        self.app = create_app('testing')
-        self.app_context = self.app.app_context()
-        self.app_context.push()
-        self.client = self.app.test_client()
-        db.create_all()
-
-    def tearDown(self):
-        db.session.remove()
-        db.drop_all()
-        self.app_context.pop()
+class UserTestCase(FlaskTestCase):
 
     def test_new_user(self):
         """

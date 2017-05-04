@@ -1,25 +1,12 @@
 import json
 import unittest
-from datetime import datetime
 
 from flask import current_app, url_for
-from users import create_app, db
-from users.model import User
+from test.utils import FlaskTestCase, make_user, api_headers
+from users.model import User, Permission
 
 
-class ModelTestCase(unittest.TestCase):
-
-    def setUp(self):
-        self.app = create_app('testing')
-        self.app_context = self.app.app_context()
-        self.app_context.push()
-        self.client = self.app.test_client()
-        db.create_all()
-
-    def tearDown(self):
-        db.session.remove()
-        db.drop_all()
-        self.app_context.pop()
+class ModelTestCase(FlaskTestCase):
 
     def test_password_setter(self):
         u = User(password='cat')
@@ -29,3 +16,14 @@ class ModelTestCase(unittest.TestCase):
         u = User(password='cat')
         with self.assertRaises(AttributeError):
             u.password
+
+    def test_permissions(self):
+        """
+        Test user permissions
+        """
+        json_resp = make_user(self.client, 'Dan')
+        user = User.query.filter_by(username='Dan').one()
+        self.assertEqual(len(user.permissions), 2)
+        perms = [p.name for p in user.permissions]
+        self.assertIn('users_view_me', perms)
+        self.assertIn('points_create', perms)
