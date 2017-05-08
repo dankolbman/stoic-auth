@@ -32,6 +32,21 @@ class UserTestCase(FlaskTestCase):
         self.assertEqual(json_resp['status'], 'missing fields')
         self.assertEqual(json_resp['missing'], ['email', 'password'])
 
+    def test_duplicate_user(self):
+        """
+        Test trying to register a duplicate user
+        """
+        json_resp = make_user(self.client)
+        json_resp = make_user(self.client, username='Blah')
+        # email should be taken
+        self.assertEqual(json_resp['status'], 'email taken')
+        # check only one user in the db
+        self.assertEqual(User.query.count(), 1)
+        # username should be taken
+        json_resp = make_user(self.client, email='other@test.com')
+        # check api response
+        self.assertEqual(json_resp['status'], 'username taken')
+
     def test_user_by_username(self):
         """
         Test retrieving user by username

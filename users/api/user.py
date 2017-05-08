@@ -39,14 +39,16 @@ class NewUser(Resource):
             fields[v] = request.json.get(v)
             if fields[v] is None:
                 missing.append(v)
-
         if len(missing) > 0:
             return {'missing': missing, 'status': 'missing fields'}, 400
         if User.query.filter_by(email=fields['email']).first() is not None:
-            return {'missing': missing, 'status': 'user exists'}, 400
+            return {'status': 'email taken'}, 400
+        if (User.query.filter_by(username=fields['username']).first()
+                is not None):
+            return {'status': 'username taken'}, 400
         user = User(username=fields['username'],
                     password=fields['password'],
-                    email=fields['password'],
+                    email=fields['email'],
                     active=True)
         db.session.add(user)
         db.session.commit()
