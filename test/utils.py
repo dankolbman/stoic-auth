@@ -31,11 +31,11 @@ def api_headers():
     }
 
 
-def make_user(client, username='Dan'):
+def make_user(client, username='Dan', email='dan@localhost.com'):
     resp = client.post('/user/',
                        headers=api_headers(),
                        data=json.dumps({'username': username,
-                                        'email': 'dan@localhost.com',
+                                        'email': email,
                                         'password': '123'}))
     json_resp = json.loads(resp.data.decode('utf-8'))
     return json_resp
